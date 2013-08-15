@@ -48,7 +48,15 @@ tic
 phiD_up = direct_solve_psi(Tup,S,Cup,qva/sw+qsa,ndof,SNQ);
 toc
 
+% only pass the first moment, i.e., the scalar flux
+figID=1; figure(figID); %clf;
+myplot2(figID,phiD_up(:,1),porder,dx,'b+-');
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+porder=0;
+[tot,sca,qva,qsa,dx] = loadmydata(dataID,porder,SNQ);
+ndof=length(dx)*(porder+1);
+
 % build new scheme matrices
 [T,S_,F,D_,M_,Sigma_,C]=build_matrices(porder,tot,sca,dx,SNQ,gamma_0,delta_0,false);
 clear S_ D_ M_ Sigma_ ; % they are the same as S, D, M, Sigma 
@@ -62,8 +70,10 @@ toc
 % plots
 %%%%%%%%%%%%%%%%%%%%%%%
 
-figID=1; figure(figID); clf;
-% only pass the first moment, i.e., the scalar flux
-myplot(figID,phiD_new(:,1),phiD_up(:,1),porder,dx);
+myplot2(figID,phiD_new(:,1),porder,dx,'c+-');
+
+% legend('Reduced Upwind','Standard Upwind','Location','Best');
+xlabel('position','FontSize',12);
+ylabel('Scalar flux','FontSize',12);
 
 disp('Done !!!!');
