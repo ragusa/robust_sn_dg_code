@@ -7,6 +7,14 @@ porder=0;
 % select angular approx (must eb an even number)
 sn=8;
 
+% sanity checks
+if porder~=0 || porder~=1
+    error('porder must be 0 or 1')
+end
+if mod(sn,2)~=0
+    error('sn must be even')
+end
+
 % load the angular quadrature
 [SNQ] = loadquadrature(sn);
 % sum of the weights
