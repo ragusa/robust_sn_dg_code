@@ -1,4 +1,8 @@
-function [L,S,C]=compute_T1(porder,snq,mt,ms,gg,e,dx)
+function [R]=build_residual(porder,tot,sca,dx,snq,gamma_0,delta_0,logi_std_up,psi,q)
+
+[mt ,ms ,gg ,e ]=compute_elem1(porder,tot,sca,dx,gamma_0,delta_0,logi_std_up );
+
+phi=compu_phi(psi,ndof,snq);
 
 % compute the sum of the SN weights
 sw = sum(snq.w);
@@ -55,6 +59,6 @@ for idir=1:ndir
 
 end
 
-
-
+% direct solve for the angular flux
+(T-S+C)*psi - q; %(qva/sw+qsa) ;
 

@@ -3,7 +3,7 @@ close all; % closes all plotting figures
 clc;       % clear console screen
 
 % select spatial approx order (0 or 1)
-porder=0;
+porder=1;
 % select angular approx (must eb an even number)
 sn=8;
 
@@ -13,7 +13,7 @@ sn=8;
 sw = sum(SNQ.w);
 
 % load data
-dataID=5;
+dataID=1;
 [tot,sca,qva,qsa,dx] = loadmydata(dataID,porder,SNQ);
 ndof=length(dx)*(porder+1);
 % constants gamma_0 and delta_0, as in the paper

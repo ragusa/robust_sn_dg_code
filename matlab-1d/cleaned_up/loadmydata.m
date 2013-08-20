@@ -1,4 +1,9 @@
-function [tot,sca,qva,qsa,dx]=loadmydata(dataID,porder,SNQ)
+function [tot,sca,qva,qsa,dx,ndof]=loadmydata(dataID,porder,SNQ)
+
+% sanity checks
+if porder~=0 && porder~=1
+    error('porder must be 0 or 1')
+end
 
 sn=SNQ.sn;
 mu=SNQ.mu;
@@ -135,3 +140,6 @@ for k=1:sn/2 % negative dir
 end
 z=kron(abs(mu)',ones(ndof,1));
 qsa=qsa.*z;
+
+% ndof
+ndof=length(dx)*(porder+1);

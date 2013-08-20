@@ -38,18 +38,18 @@ end
 gamma_right = max(gamma_1,gamma_2);
 gamma_right = 2/(1/gamma_1+1/gamma_2);
 
-if(iel==n)
-    gamma_right
-    gamma_right=1;
-end
-
-if(iel<n/2)
-    gamma_left =1;
-    gamma_right=1;
-else
-    gamma_left =0.015/100;
-    gamma_right=0.015/100;
-end
+% % if(iel==n)
+% %     gamma_right
+% %     gamma_right=1;
+% % end
+% % 
+% % if(iel<n/2)
+% %     gamma_left =1;
+% %     gamma_right=1;
+% % else
+% %     gamma_left =0.015/100;
+% %     gamma_right=0.015/100;
+% % end
 
 % compute delta's
 if(gamma_left>1e-10)
@@ -63,8 +63,8 @@ else
     delta_right=1e8;
 end
 
-fid=fopen('gamma_new.txt','a');
-fprintf(fid,'%g %g ',gamma_left,gamma_right);
+% fid=fopen('gamma_new.txt','a');
+% fprintf(fid,'%g %g ',gamma_left,gamma_right);
 
 % old version
 % take sigma_s from the element where the basis function is evaluated
@@ -72,11 +72,11 @@ sig = sca{1}(iel);
 gamma  = gamma_0 / ( max( gamma_0, sig      *sum(dx) ));
 delta = delta_0/gamma*(1-gamma);
 
-% gamma_left=gamma ; gamma_right=gamma;
-% delta_left=delta ; delta_right=delta;
+gamma_left=gamma ; gamma_right=gamma;
+delta_left=delta ; delta_right=delta;
 
-fprintf(fid,' %g \n',gamma);
-fclose(fid);
+% fprintf(fid,' %g \n',gamma);
+% fclose(fid);
 
 
 % tot

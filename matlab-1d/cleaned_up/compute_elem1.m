@@ -62,7 +62,7 @@ if(porder==1)
                 e{1}(istart+1,istart +1) =  fuR;
                 e{1}(istart+1,istart2  ) =  fdR;
             end
-            if(iel>1)&(iel<ncells)
+            if(iel>1)&&(iel<ncells)
                 e{1}(istart  ,istart0+1) = -fuL;
                 e{1}(istart  ,istart   ) = -fdL;
                 e{1}(istart+1,istart +1) =  fuR;
@@ -93,7 +93,7 @@ if(porder==1)
                 e{2}(istart+1,istart +1) =  fdR;
                 e{2}(istart+1,istart2  ) =  fuR;
             end
-            if(iel>1)&(iel<ncells)
+            if(iel>1)&&(iel<ncells)
                 e{2}(istart  ,istart0+1) = -fdL;
                 e{2}(istart  ,istart   ) = -fuL;
                 e{2}(istart+1,istart +1) =  fdR;
@@ -146,7 +146,7 @@ else % (porder =0)
                 e{1}(iel,iel  ) =   fuR;
                 e{1}(iel,iel+1) =   fdR;
             end
-            if(iel>1)&(iel<ncells)
+            if(iel>1)&&(iel<ncells)
                 e{1}(iel,iel-1) =  -fuL;
                 e{1}(iel,iel  ) =  -fdL+fuR;
                 e{1}(iel,iel+1) =       fdR;
@@ -176,7 +176,7 @@ else % (porder =0)
                 e{2}(iel,iel  ) =   fdR;
                 e{2}(iel,iel+1) =   fuR;
             end
-            if(iel>1)&(iel<ncells)
+            if(iel>1)&&(iel<ncells)
                 e{2}(iel,iel-1) =  -fdL;
                 e{2}(iel,iel  ) =  -fuL+fdR;
                 e{2}(iel,iel+1) =       fuR;
