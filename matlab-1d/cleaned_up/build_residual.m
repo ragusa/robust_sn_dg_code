@@ -1,8 +1,9 @@
 function [R]=build_residual(porder,tot,sca,dx,snq,gamma_0,delta_0,logi_std_up,psi,q)
 
-[mt ,ms ,gg ,e ]=compute_elem1(porder,tot,sca,dx,gamma_0,delta_0,logi_std_up );
+moments = compu_phi(psi,ndof,snq);
+phi = moments(:,1);
 
-phi=compu_phi(psi,ndof,snq);
+[mt ,ms ,gg ,e ]=compute_elem1(porder,tot,sca,dx,gamma_0,delta_0,logi_std_up,phi );
 
 % compute the sum of the SN weights
 sw = sum(snq.w);

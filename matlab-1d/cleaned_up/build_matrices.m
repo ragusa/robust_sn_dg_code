@@ -6,7 +6,7 @@ function [T, S, C]=build_matrices(porder,tot,sca,dx,SNQ,gamma_0,delta_0,logi_std
 % ms = mass matrix for scattering xs
 % g  = gradient matrix
 % e =  edge matrix e{1} for mu>0, e{2} for mu<0
-[mt ,ms ,g ,e ]=compute_elem1(porder,tot,sca,dx,gamma_0,delta_0,logi_std_up );
+[mt ,ms ,g ,e ] = compute_elem1(porder,tot,sca,dx,gamma_0,delta_0,logi_std_up,[]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

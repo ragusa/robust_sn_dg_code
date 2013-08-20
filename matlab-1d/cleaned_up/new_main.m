@@ -72,4 +72,6 @@ xlabel('position','FontSize',12);
 ylabel('Scalar flux','FontSize',12);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+[R]=build_residual(porder,tot,sca,dx,snq,gamma_0,delta_0,logi_std_up,psi,qva/sw+qsa)
+
 disp('Done !!!!');

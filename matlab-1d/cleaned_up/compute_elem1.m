@@ -1,10 +1,48 @@
-function [mtot,msca,gr,e]=compute_elem1(porder,tot,sca,dx,gamma_0,delta_0,logi_std_up)
+function [mtot,msca,gr,e]=compute_elem1(porder,tot,sca,dx,gamma_0,delta_0,logi_std_up,varargin_)
+
+logi_nonlinear = false;
+if~isempty(varargin_)
+    phi = varargin_;
+    logi_nonlinear = true;
+    if logi_std_up
+        warning('for nonlinear, logi_std_up should be false')
+        logi_std_up = false;
+    end
+end
+
+if logi_std_up
+    method='upwind'
+else
+    if logi_nonlinear
+        method = 'gradlog'
+    else
+        method = 'reduced'
+    end
+end
 
 % # of ncells
 ncells = length(dx);
 % ndofs
 ndofs=(porder+1)*ncells;
 
+if(strcmp(method,'gradlog'))
+    % compute grad
+    phi_cell_avg = zeros(ncells,1);
+    grad_log = zeros(ncells,1);
+    if(porder==1)
+        phi_cell_avg = ( phi(1:end-1) + phi(2:end) ) /2;
+        grad_log = abs(diff(reshape(phi,2,ncells))./phi_cell_avg);
+    else
+        phi_cell_avg = phi;
+        for iel =2:ncells-1
+            grad_log(iel)  = abs( ( phi(iel+1) - phi(iel-1) ) / phi_cell_avg(iel) );
+        end
+        iel=1;
+        grad_log(iel)  = abs( ( phi(iel+1) - phi(iel) ) / phi_cell_avg(iel) );
+        iel=ncells;
+        grad_log(iel)  = abs( ( phi(iel) - phi(iel-1) ) / phi_cell_avg(iel) );
+    end
+end
 % enforce standard upwind scheme
 if(logi_std_up)
     fu=1; fd=0; deltaL=0; deltaR=0;
@@ -19,7 +57,7 @@ else
     m=[2];
     g=[0];
 end
-% jacobian of the affine transformation 
+% jacobian of the affine transformation
 jac  = dx(1:ncells)/2;
 
 % global mass matrices
@@ -47,10 +85,10 @@ if(porder==1)
 
         % edge matrix, mu>0
         % ~~~~~~~~~~~~~~~~~
-        if(logi_std_up)
+        if(strcmp(method,'upwind'))
             if(iel~=1),      e{1}(istart  ,istart0+1) = -fu; end
             e{1}(istart+1,istart+1 ) =  fu;
-        else
+        elseif(strcmp(method,'reduced'))
             [gammaL,gammaR,deltaL,deltaR]=comp_gamma_delta(sca,tot,dx,iel,gamma_0,delta_0,ncells);
             fuL=(1+gammaL)/2;
             fdL=(1-gammaL)/2;
@@ -74,14 +112,23 @@ if(porder==1)
             end
             % outgoing face
             if(iel==ncells), e{1}(istart+1,istart+1 ) = 1; end
+        elseif(strcmp(method,'gradlog'))
+            gamma = 1 - sca{1}(iel)/( sca{1}(iel) + gradlog(iel) );
+            delta = delta_0/gamma*(1-gamma);
+            gammaL = gamma;
+            gammaR = gamma;
+            deltaL = delta;
+            deltaR = delta;
+        else
+            error('unknown method')
         end
 
         % edge matrix, mu<0
         % ~~~~~~~~~~~~~~~~~
-        if(logi_std_up)
+        if(strcmp(method,'upwind'))
             e{2}(istart  ,istart   ) = -fu;
             if(iel~=ncells), e{2}(istart+1,istart2  ) =  fu; end
-        else
+        elseif(strcmp(method,'reduced'))
             [gammaL,gammaR,deltaL,deltaR]=comp_gamma_delta(sca,tot,dx,iel,gamma_0,delta_0,ncells);
             fuL=(1+gammaL)/2;
             fdL=(1-gammaL)/2;
@@ -105,6 +152,15 @@ if(porder==1)
             end
             % outgoing face
             if(iel==1), e{2}(istart,istart ) = -1; end
+        elseif(strcmp(method,'gradlog'))
+            gamma = 1 - sca{1}(iel)/( sca{1}(iel) + gradlog(iel) );
+            delta = delta_0/gamma*(1-gamma);
+            gammaL = gamma;
+            gammaR = gamma;
+            deltaL = delta;
+            deltaR = delta;
+        else
+            error('unknown method')
         end
 
         % current edge matrix
@@ -131,10 +187,10 @@ else % (porder =0)
 
         % edge matrix, mu>0
         % ~~~~~~~~~~~~~~~~~
-        if(logi_std_up)
+        if(strcmp(method,'upwind'))
             if(iel~=1),      e{1}(iel,iel-1) = -fu; end
             e{1}(iel,iel) =  fu;
-        else
+        elseif(strcmp(method,'reduced'))
             [gammaL,gammaR,deltaL,deltaR]=comp_gamma_delta(sca,tot,dx,iel,gamma_0,delta_0,ncells);
             fuL=(1+gammaL)/2;
             fdL=(1-gammaL)/2;
@@ -157,14 +213,23 @@ else % (porder =0)
             end
             % outgoing face
             if(iel==ncells), e{1}(iel,iel) = e{1}(iel,iel)+1; end
+        elseif(strcmp(method,'gradlog'))
+            gamma = 1 - sca{1}(iel)/( sca{1}(iel) + gradlog(iel) );
+            delta = delta_0/gamma*(1-gamma);
+            gammaL = gamma;
+            gammaR = gamma;
+            deltaL = delta;
+            deltaR = delta;
+        else
+            error('unknown method')
         end
 
         % edge matrix, mu<0
         % ~~~~~~~~~~~~~~~~~
-         if(logi_std_up)
+        if(strcmp(method,'upwind'))
             if(iel~=ncells),      e{2}(iel,iel+1) = fu; end
             e{2}(iel,iel) =  -fu;
-        else
+        elseif(strcmp(method,'reduced'))
             [gammaL,gammaR,deltaL,deltaR]=comp_gamma_delta(sca,tot,dx,iel,gamma_0,delta_0,ncells);
             fuL=(1+gammaL)/2;
             fdL=(1-gammaL)/2;
@@ -187,7 +252,16 @@ else % (porder =0)
             end
             % outgoing face
             if(iel==1), e{2}(iel,iel) = e{2}(iel,iel)-1; end
-         end
+        elseif(strcmp(method,'gradlog'))
+            gamma = 1 - sca{1}(iel)/( sca{1}(iel) + gradlog(iel) );
+            delta = delta_0/gamma*(1-gamma);
+            gammaL = gamma;
+            gammaR = gamma;
+            deltaL = delta;
+            deltaR = delta;
+        else
+            error('unknown method')
+        end
 
         % current edge matrix
         switch iel
